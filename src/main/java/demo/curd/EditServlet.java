@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author ADMIN
  */
-public class ViewServlet extends HttpServlet {
+public class EditServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,44 +33,40 @@ public class ViewServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            String name=request.getParameter("name");
+            String pass=request.getParameter("pass");
+            String mail=request.getParameter("mail");
+            String country=request.getParameter("country");
             Connection con;
             PreparedStatement ps;
-            ResultSet rs;
-            String kq="";
             try{
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 con=DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=demodb","sa","sa");
-                ps=con.prepareStatement("select * from users");
-                rs=ps.executeQuery();
-                kq+="<table border=1>";
-                kq+="<tr><td>Id</td><td>Name</td><td>Password</td><td>Email</td><td>Country</td><td>Edit</td><td>Delete</td></tr>";
-                while (rs.next()) {
-                    kq+="<tr>";
-                    kq+="<td>"+rs.getInt(1)+"</td>";
-                    kq+="<td>"+rs.getString(2)+"</td>";
-                    kq+="<td>"+rs.getString(3)+"</td>";
-                    kq+="<td>"+rs.getString(4)+"</td>";
-                    kq+="<td>"+rs.getString(5)+"</td>";
-                    kq+="<td> <a href='EditServlet'> Edit</a></td>";
-                    kq+="<td> <a href='DeleteServlet'> Delete</a></td>";
-                    kq+="</tr>";                   
-                }
-                kq+="</table>";
+                ps=con.prepareStatement("insert into users(name,password,email,country) values(?,?,?,?)");
+                ps.setString(1, name);
+                ps.setString(2, pass);
+                ps.setString(3, mail);
+                ps.setString(4, country);
+                int kq=ps.executeUpdate();
+                if(kq>0)
+                    out.println("<h2>Update saved successfully</h2>");
+                else
+                    out.println("<h2>Update saved fail</h2>");
                 con.close();
             }catch(Exception ex){
-                System.out.println("Error: "+ex.toString());
-            }                                                                                                          
+                System.out.println("Error:"+ex.toString());
+                out.println("<h2>Record saved fail</h2>");
+            }
+            request.getRequestDispatcher("index.html").include(request, response);  
+            
+            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewServlet</title>");            
+            out.println("<title>Servlet EditServlet</title>");            
             out.println("</head>");
-            out.println("<body>"); 
-            out.println("<a href='index.html'>Add New Users</a>");
-            out.println("<br>");            
-            out.println("<h1>Users List</h1>");
-            out.println(kq);
+            out.println("<body>");
+            out.println("<h1>Servlet EditServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }

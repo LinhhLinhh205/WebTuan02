@@ -8,6 +8,10 @@
         <servlet-name>ViewServlet</servlet-name>
         <servlet-class>demo.curd.ViewServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditServlet</servlet-name>
+        <servlet-class>demo.curd.EditServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SaveServlet</servlet-name>
         <url-pattern>/SaveServlet</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>ViewServlet</servlet-name>
         <url-pattern>/ViewServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditServlet</servlet-name>
+        <url-pattern>/EditServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
