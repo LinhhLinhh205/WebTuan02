@@ -6,6 +6,10 @@ package demo.curd;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +35,41 @@ public class ViewServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
+            Connection con;
+            PreparedStatement ps;
+            ResultSet rs;
+            String kq="";
+            try{
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                con=DriverManager.getConnection("jdbc:sqlserver://PC315;databaseName=demodb","sa","sa");
+                ps=con.prepareStatement("select * from users");
+                rs=ps.executeQuery();
+                kq+="<table border=1>";
+                kq+="<tr><td>Id</td><td>Name</td><td>Password</td><td>Email</td><td>Country</td><td>Edit</td><td>Delete</td></tr>";
+                while (rs.next()) {
+                    kq+="<tr>";
+                    kq+="<td>"+rs.getInt(1)+"</td>";
+                    kq+="<td>"+rs.getString(2)+"</td>";
+                    kq+="<td>"+rs.getString(3)+"</td>";
+                    kq+="<td>"+rs.getString(4)+"</td>";
+                    kq+="<td>"+rs.getString(5)+"</td>";
+                    kq+="<td>"+rs.getString(6)+"</td>";
+                    kq+="<td>"+rs.getString(7)+"</td>";
+                    kq+="<tr>";
+                    con.close();
+                }
+            }catch(Exception ex){
+                System.out.println("Error: "+ex.toString());
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
