@@ -34,42 +34,50 @@ public class EditServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            String name=request.getParameter("name");
-            String pass=request.getParameter("pass");
-            String mail=request.getParameter("mail");
-            String country=request.getParameter("country");
+            String name = request.getParameter("name");
+            String pass = request.getParameter("pass");
+            String mail = request.getParameter("mail");
+            String country = request.getParameter("country");
+            int userId = Integer.parseInt(request.getParameter("id"));
             Connection con;
-            PreparedStatement ps;           
-            String kq="";
-              
-            try{
+            PreparedStatement ps;
+            ResultSet rs;
+            String kq = "";
+
+            try {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                con=DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=demodb","sa","sa");
-                ps=con.prepareStatement("select * from users");
-                rs=ps.executeUpdate();
-                kq+="<table border=0>";
-                kq+="<tr><td>Name</td><td>Password</td><td>Email</td><td>Country</td><td>Edit</td><td>Delete</td></tr>";
+                con = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=demodb", "sa", "sa");
+                String updateQuery = "UPDATE users SET name=?, pass=?, mail=?, country=? WHERE id=?";
+                PreparedStatement updatePs = con.prepareStatement(updateQuery);
+                updatePs.setString(1, name);
+                updatePs.setString(2, pass);
+                updatePs.setString(3, mail);
+                updatePs.setString(4, country);
+                updatePs.setInt(5, userId);
+                updatePs.executeUpdate();
+                ps = con.prepareStatement("SELECT * FROM users");
+                rs = ps.executeQuery();
+                kq += "<table border=0>";
+                kq += "<tr><td>Name</td><td>Password</td><td>Email</td><td>Country</td><td>Edit</td><td>Delete</td></tr>";
                 while (rs.next()) {
-                    kq+="<tr>";
-                    kq+="<td>"+rs.getInt(1)+"</td>";
-                    kq+="<td>"+rs.getString(2)+"</td>";
-                    kq+="<td>"+rs.getString(3)+"</td>";
-                    kq+="<td>"+rs.getString(4)+"</td>";
-                    kq+="<td>"+rs.getString(5)+"</td>";
-                    kq+="<td> <a href='EditServlet'> Edit</a></td>";
-                    kq+="<td> <a href='DeleteServlet'> Delete</a></td>";
-                    kq+="</tr>";                   
+                    kq += "<tr>";
+                    kq += "<td>" + rs.getString("name") + "</td>";
+                    kq += "<td>" + rs.getString("pass") + "</td>";
+                    kq += "<td>" + rs.getString("mail") + "</td>";
+                    kq += "<td>" + rs.getString("country") + "</td>";
+                    kq += "<td><a href='EditServlet?id=" + rs.getInt("id") + "'>Edit</a></td>";
+                    kq += "<td><a href='DeleteServlet?id=" + rs.getInt("id") + "'>Delete</a></td>";
+                    kq += "</tr>";
                 }
-                kq+="</table>";
-                con.close();
-            }catch(Exception ex){
-                System.out.println("Error: "+ex.toString());
-            }                                                 
+                kq += "</table>";
+            } catch (Exception ex) {
+                System.out.println("Error: " + ex.toString());
+            }
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditServlet</title>");            
+            out.println("<title>Servlet EditServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet EditServlet at " + request.getContextPath() + "</h1>");
